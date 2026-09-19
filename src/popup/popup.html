@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>fERP Pro</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <div class="logo">fERP Pro</div>
+    <div class="version">v1.0.0</div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="control">Control</button>
+    <button class="tab-btn" data-tab="progress">Progress</button>
+    <button class="tab-btn" data-tab="settings">Settings</button>
+  </nav>
+
+  <main>
+    <!-- CONTROL TAB -->
+    <section id="tab-control" class="tab-content active">
+      <div class="card">
+        <h3>Mode</h3>
+        <div class="toggle-group">
+          <label class="toggle-card">
+            <input type="radio" name="mode" value="cascade" checked>
+            <span>Cascade (All)</span>
+          </label>
+          <label class="toggle-card">
+            <input type="radio" name="mode" value="selective">
+            <span>Selective</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Sentiment</h3>
+        <div class="toggle-group">
+          <label class="toggle-card sentiment">
+            <input type="radio" name="sentiment" value="positive" checked>
+            <span>👍 Positive</span>
+          </label>
+          <label class="toggle-card sentiment">
+            <input type="radio" name="sentiment" value="neutral">
+            <span>👐 Neutral</span>
+          </label>
+          <label class="toggle-card sentiment">
+            <input type="radio" name="sentiment" value="negative">
+            <span>👎 Negative</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <label class="switch-row">
+          <span>Randomize Options</span>
+          <div class="switch">
+            <input type="checkbox" id="randomize" checked>
+            <span class="slider"></span>
+          </div>
+        </label>
+      </div>
+
+      <div class="card">
+        <h3>Custom Feedback Text (Optional)</h3>
+        <textarea id="customText" rows="3" placeholder="Enter custom feedback comment..."></textarea>
+      </div>
+
+      <div class="action-buttons">
+        <button id="startBtn" class="btn-primary">Start Automation</button>
+        <button id="dryRunBtn" class="btn-outline">Dry Run</button>
+      </div>
+      <div id="statusIndicator" class="status-indicator">Idle</div>
+    </section>
+
+    <!-- PROGRESS TAB -->
+    <section id="tab-progress" class="tab-content">
+      <div class="card">
+        <h3>Progress <span id="progressText">0/0</span></h3>
+        <div class="progress-container">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+      </div>
+
+      <div class="card log-container">
+        <h3>Log</h3>
+        <div id="logArea" class="log-area"></div>
+      </div>
+
+      <div class="card forms-container">
+        <h3>Forms</h3>
+        <table id="formsTable">
+          <thead>
+            <tr>
+              <th>Subject</th>
+              <th>Professor</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Form rows will be injected here -->
+          </tbody>
+        </table>
+      </div>
+
+      <button id="stopBtn" class="btn-danger">Stop Automation</button>
+    </section>
+
+    <!-- SETTINGS TAB -->
+    <section id="tab-settings" class="tab-content">
+      <div class="card">
+        <label class="switch-row">
+          <span>Smart Delays</span>
+          <div class="switch">
+            <input type="checkbox" id="smartDelays" checked>
+            <span class="slider"></span>
+          </div>
+        </label>
+        <div class="delay-sliders" id="delaySliders">
+          <label>Min Delay: <span id="delayMinVal">2.0</span>s
+            <input type="range" id="delayMin" min="0" max="5000" step="500" value="2000">
+          </label>
+          <label>Max Delay: <span id="delayMaxVal">8.0</span>s
+            <input type="range" id="delayMax" min="1000" max="15000" step="500" value="8000">
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <label class="switch-row">
+          <span>Auto-download Admit Card</span>
+          <div class="switch">
+            <input type="checkbox" id="autoDownload" checked>
+            <span class="slider"></span>
+          </div>
+        </label>
+        <label class="switch-row">
+          <span>Desktop Notifications</span>
+          <div class="switch">
+            <input type="checkbox" id="notifications" checked>
+            <span class="slider"></span>
+          </div>
+        </label>
+      </div>
+
+      <div class="card">
+        <label class="switch-row">
+          <span>Auto-retry on failure</span>
+          <div class="switch">
+            <input type="checkbox" id="autoRetry" checked>
+            <span class="slider"></span>
+          </div>
+        </label>
+        <label class="input-row" id="maxRetriesRow">
+          <span>Max Retries</span>
+          <input type="number" id="maxRetries" min="1" max="10" value="3">
+        </label>
+      </div>
+
+      <div class="card">
+        <h3>Theme</h3>
+        <div class="toggle-group">
+          <label class="toggle-card">
+            <input type="radio" name="theme" value="light">
+            <span>Light</span>
+          </label>
+          <label class="toggle-card">
+            <input type="radio" name="theme" value="dark">
+            <span>Dark</span>
+          </label>
+          <label class="toggle-card">
+            <input type="radio" name="theme" value="system" checked>
+            <span>System</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Presets</h3>
+        <div class="preset-controls">
+          <select id="presetSelect">
+            <option value="">-- Select Preset --</option>
+          </select>
+          <button id="loadPresetBtn" class="btn-outline">Load</button>
+        </div>
+        <div class="preset-controls">
+          <input type="text" id="presetName" placeholder="Preset name">
+          <button id="savePresetBtn" class="btn-outline">Save</button>
+        </div>
+        <div class="preset-controls mt-10">
+          <button id="exportPresetsBtn" class="btn-outline">Export</button>
+          <label class="btn-outline file-upload">
+            Import
+            <input type="file" id="importPresetsInput" accept=".json">
+          </label>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="popup.js"></script>
+</body>
+</html>
