@@ -76,7 +76,7 @@
         console.log('[fERP Pro] Detected active feedback form.');
         // Handle captcha interaction automatically on form pages
         if (FP.CaptchaHandler) {
-          FP.CaptchaHandler.setupCaptchaInteraction();
+          await FP.CaptchaHandler.setupCaptchaInteraction();
         }
       }
     },
@@ -238,20 +238,23 @@
         return;
       }
 
-      // Check for Captcha
+      // Handle Captcha — try OCR auto-solve first, fallback to manual
       const captchaField = FP.CaptchaHandler ? FP.CaptchaHandler.getCaptchaField() : null;
-      
+
       if (captchaField) {
-        if (FP.ProgressTracker) FP.ProgressTracker.addLog('CAPTCHA detected. Waiting for user input...', 'warning');
-        
-        // Notify background/popup that user action is needed
-        if (chrome && chrome.runtime) {
-          chrome.runtime.sendMessage({ type: MSG.CAPTCHA_NEEDED });
+        if (FP.ProgressTracker) FP.ProgressTracker.addLog('CAPTCHA detected — attempting OCR auto-solve...', 'info');
+
+        const autoSolved = await FP.CaptchaHandler.autoSolveCaptcha(true);
+
+        if (autoSolved) {
+          if (FP.ProgressTracker) FP.ProgressTracker.addLog('✅ CAPTCHA solved automatically via OCR!', 'success');
+          // Form was auto-submitted inside autoSolveCaptcha
+        } else {
+          if (FP.ProgressTracker) FP.ProgressTracker.addLog('⚠️ OCR failed — manual captcha input required. Type it in the ERP tab and press Enter.', 'warning');
+          // setupManualCaptcha + notification already done inside autoSolveCaptcha
         }
-        
-        // Form submission will be handled by the CaptchaHandler's enter key listener
       } else {
-        // No captcha, auto-submit if not in dry-run
+        // No captcha — apply smart delay then auto-submit
         if (this.config.smartDelays) {
           if (FP.ProgressTracker) FP.ProgressTracker.addLog('Applying smart delay before submit...');
           await this.delay(this.config.delayMin, this.config.delayMax);

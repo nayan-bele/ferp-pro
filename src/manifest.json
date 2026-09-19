@@ -24,6 +24,7 @@
   "content_scripts": [{
     "matches": ["*://erp.iitkgp.ac.in/*"],
     "js": [
+      "scripts/lib/tesseract.min.js",
       "scripts/modules/profiles.js",
       "scripts/modules/dialog-bypass.js",
       "scripts/modules/form-detector.js",
