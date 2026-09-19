@@ -24,7 +24,6 @@
   "content_scripts": [{
     "matches": ["*://erp.iitkgp.ac.in/*"],
     "js": [
-      "scripts/lib/tesseract.min.js",
       "scripts/modules/profiles.js",
       "scripts/modules/dialog-bypass.js",
       "scripts/modules/form-detector.js",
@@ -35,6 +34,13 @@
     ],
     "run_at": "document_idle"
   }],
+  "web_accessible_resources": [{
+    "resources": ["scripts/lib/tesseract.min.js"],
+    "matches": ["*://erp.iitkgp.ac.in/*"]
+  }],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
   "commands": {
     "start-automation": {
       "suggested_key": { "default": "Alt+Shift+S" },

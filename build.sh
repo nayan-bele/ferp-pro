@@ -20,7 +20,7 @@ cp -r src/* dist/firefox/
 
 # Patch manifest for Firefox:
 # 1. Replace service_worker with scripts (Firefox doesn't support MV3 service_worker yet)
-# 2. Add browser_specific_settings with gecko ID
+# 2. Add browser_specific_settings with gecko ID + data_collection_permissions (required by AMO)
 python3 -c "
 import json
 
@@ -32,18 +32,25 @@ if 'background' in manifest and 'service_worker' in manifest['background']:
     sw = manifest['background']['service_worker']
     manifest['background'] = { 'scripts': [sw] }
 
-# Add gecko-specific settings
+# Remove content_security_policy (not needed/supported the same way in Firefox)
+manifest.pop('content_security_policy', None)
+
+# Add gecko-specific settings including required data_collection_permissions
 manifest['browser_specific_settings'] = {
     'gecko': {
         'id': 'ferp-pro@nayanbele',
-        'strict_min_version': '109.0'
+        'strict_min_version': '109.0',
+        'data_collection_permissions': {
+            'required': [],
+            'optional': []
+        }
     }
 }
 
 with open('dist/firefox/manifest.json', 'w') as f:
     json.dump(manifest, f, indent=2)
 
-print('  \u2705 Firefox manifest patched (service_worker \u2192 scripts, gecko added)')
+print('  \u2705 Firefox manifest patched (scripts, gecko, data_collection_permissions)')
 "
 
 # Create Chrome ZIP
