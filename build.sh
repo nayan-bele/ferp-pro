@@ -49,16 +49,18 @@ if not manifest['web_accessible_resources']:
 # 4. Remove Chrome-only CSP (wasm-unsafe-eval not needed without Tesseract)
 manifest.pop('content_security_policy', None)
 
-# 5. Add gecko settings with correct strict_min_version (140 = first to support
-#    data_collection_permissions) and required data_collection_permissions.
-#    'technicalAndInteraction' covers storing user preferences via chrome.storage.
+# 5. Add gecko settings:
+#    - strict_min_version 142.0 (Desktop 140+ and Android 142+ both supported)
+#    - required: ["none"]  — extension collects NO user data
+#    - optional: ["technicalAndInteraction"]  — stores user preferences in storage
+#      (can only be optional per Firefox schema rules)
 manifest['browser_specific_settings'] = {
     'gecko': {
         'id': 'ferp-pro@nayanbele',
-        'strict_min_version': '140.0',
+        'strict_min_version': '142.0',
         'data_collection_permissions': {
-            'required': ['technicalAndInteraction'],
-            'optional': []
+            'required': ['none'],
+            'optional': ['technicalAndInteraction']
         }
     }
 }
@@ -68,8 +70,8 @@ with open('dist/firefox/manifest.json', 'w') as f:
 
 print('  \u2705 Firefox manifest patched')
 print('  \u2022 background: scripts (not service_worker)')
-print('  \u2022 strict_min_version: 140.0')
-print('  \u2022 data_collection_permissions: technicalAndInteraction')
+print('  \u2022 strict_min_version: 142.0 (Desktop + Android)')
+print('  \u2022 data_collection_permissions: required=[none], optional=[technicalAndInteraction]')
 print('  \u2022 Tesseract removed (eval-free build)')
 "
 
