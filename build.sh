@@ -18,13 +18,21 @@ cp -r src/* dist/chrome/
 echo "📦 Packaging Firefox extension..."
 cp -r src/* dist/firefox/
 
-# Patch manifest for Firefox: add browser_specific_settings
+# Patch manifest for Firefox:
+# 1. Replace service_worker with scripts (Firefox doesn't support MV3 service_worker yet)
+# 2. Add browser_specific_settings with gecko ID
 python3 -c "
-import json, sys
+import json
 
 with open('dist/firefox/manifest.json', 'r') as f:
     manifest = json.load(f)
 
+# Fix background: replace service_worker with scripts
+if 'background' in manifest and 'service_worker' in manifest['background']:
+    sw = manifest['background']['service_worker']
+    manifest['background'] = { 'scripts': [sw] }
+
+# Add gecko-specific settings
 manifest['browser_specific_settings'] = {
     'gecko': {
         'id': 'ferp-pro@nayanbele',
@@ -35,7 +43,7 @@ manifest['browser_specific_settings'] = {
 with open('dist/firefox/manifest.json', 'w') as f:
     json.dump(manifest, f, indent=2)
 
-print('  ✅ Firefox manifest patched')
+print('  \u2705 Firefox manifest patched (service_worker \u2192 scripts, gecko added)')
 "
 
 # Create Chrome ZIP
